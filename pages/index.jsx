@@ -1,7 +1,9 @@
+import { getFeaturedEvents } from "../dummy-data";
+
 function HomePage() {
   return (
     <div>
-      <h1>Home page</h1>
+      <ul></ul>
     </div>
   )
 }
