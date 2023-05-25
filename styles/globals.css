@@ -18,3 +18,7 @@ h5,
 h6 {
   font-family: 'Lato', sans-serif;
 }
+
+ul {
+  list-style-type: none;
+}
