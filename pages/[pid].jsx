@@ -1,8 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-import { getStaticProps } from ".";
-
 function ProductDetailPage(props) {
   const { loadedProduct } = props;
   return (
@@ -14,12 +12,12 @@ function ProductDetailPage(props) {
 }
 
 export async function getStaticProps(context) {
-  const data = JSON.parse(jsonData);
-  const productId = params.pid
-
   const { params } = context;
   const filePath = path.join(process.cwd(), 'data/dummy-backend.json');
+
   const jsonData = await fs.readFile(filePath);
+  const data = JSON.parse(jsonData);
+  const productId = params.pid
 
   const product = data.products.find((product) => product.id === productId);
 
@@ -27,6 +25,15 @@ export async function getStaticProps(context) {
     props: {
       loadedProduct: product
     }
+  }
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { pid: 'p1' } }
+    ],
+    fallback: 'blocking'
   }
 }
 
