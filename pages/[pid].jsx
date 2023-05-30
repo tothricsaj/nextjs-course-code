@@ -3,6 +3,13 @@ import path from 'path';
 
 function ProductDetailPage(props) {
   const { loadedProduct } = props;
+
+  if(!loadedProduct) {
+    return (
+      <h2>Loading....</h2>
+    );
+  }
+
   return (
     <>
       <h1>{loadedProduct.title}</h1>
@@ -22,12 +29,15 @@ async function getData() {
 
 export async function getStaticProps(context) {
   const { params } = context;
-
   const productId = params.pid
-
   const data = await getData();
-
   const product = data.products.find((product) => product.id === productId);
+
+  if(!product) {
+    return { notFound: true };
+  }
+
+  console.log('product -->>', product);
 
   return {
     props: {
@@ -44,7 +54,7 @@ export async function getStaticPaths() {
 
   return {
     paths: pathsWithParams,
-    fallback: 'blocking'
+    fallback: true
   }
 }
 
