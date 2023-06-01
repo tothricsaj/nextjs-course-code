@@ -1,35 +1,42 @@
 import { useEffect, useState } from "react";
+import userSWR from 'swr';
 
 function LastSalesPage(props) {
 
   const [sales, setSales] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+
+  const { data, error } = userSWR('https://nextjs-course-8fe63-default-rtdb.firebaseio.com/sales.json', (url) => fetch(url).then(res => res.json()));
 
   useEffect(() => {
-    setIsLoading(true);
+    if(data) {
+      const trasformedSales = [];
 
-    fetch('https://nextjs-course-8fe63-default-rtdb.firebaseio.com/sales.json')
-      .then(response => response.json())
-      .then(data => {
-        const trasformedSales = [];
+      for(const key in data) {
+        trasformedSales.push({
+          id: key,
+          username: data[key].username,
+          volume:data[key].volume
+        });
+      }
 
-        for(const key in data) {
-          trasformedSales.push({
-            id: key,
-            username: data[key].username,
-            volume:data[key].volume
-          });
-        }
+      setSales(trasformedSales);
+    }
+  }, [data]);
+  // useEffect(() => {
+  //   setIsLoading(true);
 
-        console.log(trasformedSales);
+  //   fetch('https://nextjs-course-8fe63-default-rtdb.firebaseio.com/sales.json')
+  //     .then(response => response.json())
+  //     .then(data => {
 
-        setSales(trasformedSales);
-        setIsLoading(false);
-      });
-  }, []);
 
-  if(isLoading) return <p>Loading....</p>;
-  if(!sales) return <p>No data yet</p>;
+  //       setIsLoading(false);
+  //     });
+  // }, []);
+
+  if(error) return <p>Failed to load!</p>;
+  if(!data || !sales) return <p>Loading....</p>;
 
   return (
     <ul>
