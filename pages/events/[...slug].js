@@ -1,5 +1,7 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+
+import useSWR from 'swr';
 
 import { getFilteredEvents } from '../../helpers/api-util';
 import EventList from '../../components/events/event-list';
@@ -8,19 +10,41 @@ import Button from '../../components/ui/button';
 import ErrorAlert from '../../components/ui/error-alert';
 
 function FilteredEventsPage(props) {
-  // const router = useRouter();
 
-  // const filterData = router.query.slug;
+  const [ loadedEvents, setLoadedEvents ] = useState();
+  const { data, error } = useSWR('https://nextjs-course-8fe63-default-rtdb.firebaseio.com/sales/events.json');
 
-  // if (!filterData) {
-  //   return <p className='center'>Loading...</p>;
-  // }
+  useEffect(() => {
+    if(data) {
+      const events = [];
 
-  // const filteredYear = filterData[0];
-  // const filteredMonth = filterData[1];
+      for(const key in data) {
+        events.push({
+          id: key,
+          ...data[key]
+        });
+      }
 
-  // const numYear = +filteredYear;
-  // const numMonth = +filteredMonth;
+      setLoadedEvents(events);
+    }
+
+  }, data);
+
+  if(!loadedEvents) {
+    return <p className='center'>Loading...</p>
+  }
+
+  const filteredYear = filterData[0];
+  const filteredMonth = filterData[1];
+
+  const numYear = +filteredYear;
+  const numMonth = +filteredMonth;
+
+  const filteredLoadedEvents = loadedEvents.filter((event) => {
+    const eventDate = new Date(event.date);
+    return eventDate.getFullYear() === year && eventDate.getMonth() === month - 1;
+  });
+
 
   if (props.hasError) {
     return (
